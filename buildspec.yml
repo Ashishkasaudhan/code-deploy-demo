@@ -21,12 +21,12 @@ phases:
       - helm plugin install https://github.com/zendesk/helm-secrets
   build:
     commands:
-      - aws eks --region us-east-1 update-kubeconfig --name jfrog-ha
-      - helm ls -n jfrog-dev
+      - aws eks --region us-west-2 update-kubeconfig --name smpaas-ps-test
+      - helm ls
         
   post_build:
     commands:
-      - helm ls -n jfrog-dev
+      - helm ls 
 
 artifacts:
   files:
