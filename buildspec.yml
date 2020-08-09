@@ -15,14 +15,16 @@ phases:
       - apt install -y software-properties-common
       - apt-get install python python-pip -y
       - pip install sops
+      - curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.7/2020-07-08/bin/linux/amd64/aws-iam-authenticator; chmod +x ./aws-iam-authenticator; mv aws-iam-authenticator /usr/local/bin
       - curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.12/2020-07-08/bin/linux/amd64/kubectl; chmod +x ./kubectl; mv kubectl /usr/local/bin
       - wget https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz; tar -zxvf helm-v3.2.0-linux-amd64.tar.gz; mv linux-amd64/helm /usr/local/bin/helm; chmod u+x /usr/local/bin/helm
       - wget https://github.com/roboll/helmfile/releases/download/v0.94.1/helmfile_linux_amd64; mv helmfile_linux_amd64 /usr/local/bin/helmfile; chmod u+x /usr/local/bin/helmfile
-      - helm plugin install https://github.com/zendesk/helm-secrets
+      
   build:
     commands:
-      - aws eks --region us-west-2 update-kubeconfig --name smpaas-ps-test
+      - aws eks --region us-west-2 update-kubeconfig --name smpaas-ps-test --role-arn arn:aws:iam::493852970418:role/service-role/codebuild-role-eks
       - helm ls
+      - helm plugin install https://github.com/zendesk/helm-secrets
         
   post_build:
     commands:
