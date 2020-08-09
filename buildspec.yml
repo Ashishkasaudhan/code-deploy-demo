@@ -1,0 +1,33 @@
+version: 0.2
+
+
+phases:
+
+  install:
+    runtime-versions:
+      docker: 18
+    commands:
+      - export DEBIAN_FRONTEND=noninteractive
+      - echo '#!/bin/bash' > /usr/local/bin/ok; echo 'if [[ "$CODEBUILD_BUILD_SUCCEEDING" == "0" ]]; then exit 1; else exit 0; fi' >> /usr/local/bin/ok; chmod +x /usr/local/bin/ok
+  pre_build:
+    commands:     
+      - apt update
+      - apt install -y software-properties-common
+      - apt-get install python python-pip -y
+      - pip install sops
+      - curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.12/2020-07-08/bin/linux/amd64/kubectl; chmod +x ./kubectl; mv kubectl /usr/local/bin
+      - wget https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz; tar -zxvf helm-v3.2.0-linux-amd64.tar.gz; mv linux-amd64/helm /usr/local/bin/helm; chmod u+x /usr/local/bin/helm
+      - wget https://github.com/roboll/helmfile/releases/download/v0.94.1/helmfile_linux_amd64; mv helmfile_linux_amd64 /usr/local/bin/helmfile; chmod u+x /usr/local/bin/helmfile
+      - helm plugin install https://github.com/zendesk/helm-secrets
+  build:
+    commands:
+      - aws eks --region us-east-1 update-kubeconfig --name jfrog-ha
+      - helm ls -n jfrog-dev
+        
+  post_build:
+    commands:
+      - helm ls -n jfrog-dev
+
+artifacts:
+  files:
+    - '*/'
