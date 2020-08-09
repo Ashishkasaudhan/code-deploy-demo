@@ -22,7 +22,7 @@ phases:
       
   build:
     commands:
-      - aws eks --region us-west-2 update-kubeconfig --name smpaas-ps-test --role-arn arn:aws:iam::493852970418:role/service-role/codebuild-role-eks
+      - aws eks --region us-west-2 update-kubeconfig --name smpaas-ps-test arn:aws:iam::493852970418:role/EKSCTL-CODE
       - helm ls
       - helm plugin install https://github.com/zendesk/helm-secrets
         
